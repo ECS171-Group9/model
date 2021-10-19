@@ -15,7 +15,19 @@ with open('booksummaries.txt', 'r', encoding="utf8") as summaries, open('summari
     if (not book['genres'] or not book['book_desc'] or book['book_desc'].startswith('-')):
       continue
 
-    book['book_desc'] = book['book_desc'].strip()
+    book_description = book['book_desc'].strip()
+    # Split the description based on spaces between words to get a word count for cleanup
+    book_description_word_list = book_description.split(' ')
+    # Check if the description is longer than 250 words and slice it if it is, also turn all characters upper case
+    book_description_word_list = (book_description_word_list[:250]) if len(book_description_word_list) >= 250 \
+        else book_description_word_list
+    # Check if the description is less than 250 words and pad 0's to the front if it is
+    if len(book_description_word_list) < 250:
+        diff = 250 - len(book_description_word_list)
+        for i in range(diff):
+            book_description_word_list.insert(0, '0')
+    # Join the words back together and capitalize everything
+    book['book_desc'] = ' '.join(book_description_word_list).upper()
 
     book['genres'] = [value for key, value in json.loads(book['genres']).items()]
     # book['genres'] = list(set(book['genres']) & valid_genres)
